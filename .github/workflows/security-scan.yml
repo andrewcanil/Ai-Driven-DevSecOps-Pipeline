@@ -489,32 +489,51 @@ jobs:
           echo "- ✅ Dashboard: Built" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Extract vulnerability details from AI analysis if available
+          # Find AI analysis file (check multiple locations)
+          AI_FILE=""
           if [ -f "aggregated/processed/ai_analysis.json" ]; then
+            AI_FILE="aggregated/processed/ai_analysis.json"
+          elif [ -f "aggregated/ai-analysis/ai_analysis.json" ]; then
+            AI_FILE="aggregated/ai-analysis/ai_analysis.json"
+          fi
+          
+          # Extract vulnerability details from AI analysis if available
+          if [ -n "$AI_FILE" ] && [ -f "$AI_FILE" ]; then
             echo "## 🎯 Vulnerability Analysis" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             
-            # Parse JSON and extract key metrics
-            TOTAL=$(grep -o '"total_vulnerabilities":[0-9]*' aggregated/processed/ai_analysis.json | grep -o '[0-9]*' | head -1)
-            FP_RATE=$(grep -o '"false_positive_rate":[0-9.]*' aggregated/processed/ai_analysis.json | grep -o '[0-9.]*' | head -1)
+            # Parse JSON and extract key metrics using jq
+            if command -v jq &> /dev/null; then
+              TOTAL=$(jq -r '.summary.total_vulnerabilities // 0' "$AI_FILE")
+              FILTERED=$(jq -r '.summary.filtered_vulnerabilities // 0' "$AI_FILE")
+              FP_RATE=$(jq -r '.summary.false_positive_rate // 0' "$AI_FILE")
+              CRITICAL=$(jq -r '.summary.by_severity.CRITICAL // 0' "$AI_FILE")
+              HIGH=$(jq -r '.summary.by_severity.HIGH // 0' "$AI_FILE")
+              
+              echo "**Total Vulnerabilities Found:** $FILTERED/$TOTAL | **False Positive Rate:** ${FP_RATE}%" >> $GITHUB_STEP_SUMMARY
+              echo "**CRITICAL:** $CRITICAL | **HIGH:** $HIGH" >> $GITHUB_STEP_SUMMARY
+            else
+              # Fallback to grep if jq not available
+              TOTAL=$(grep -o '"total_vulnerabilities":[0-9]*' "$AI_FILE" | grep -o '[0-9]*' | head -1)
+              FP_RATE=$(grep -o '"false_positive_rate":[0-9.]*' "$AI_FILE" | grep -o '[0-9.]*' | head -1)
+              echo "**Total Vulnerabilities Found:** ${TOTAL:-0} | **False Positive Rate:** ${FP_RATE:-0}%" >> $GITHUB_STEP_SUMMARY
+            fi
             
-            echo "**Total Vulnerabilities Found:** ${TOTAL:-0} | **False Positive Rate:** ${FP_RATE:-0}%" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             
-            # Show top 5 vulnerabilities with actual data
+            # Show top priority vulnerabilities
             echo "### Top Priority Vulnerabilities" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Priority | Title | Severity | Risk Score |" >> $GITHUB_STEP_SUMMARY
             echo "|----------|-------|----------|------------|" >> $GITHUB_STEP_SUMMARY
             
-            # Extract top 5 vulnerabilities using jq
+            # Extract top 10 vulnerabilities using jq
             if command -v jq &> /dev/null; then
-              jq -r '.top_priorities[:5] | .[] | "| P\(.priority) | \(.title[:50])... | \(.severity) | \(.risk_score) |"' aggregated/processed/ai_analysis.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "| - | Unable to parse vulnerabilities | - | - |" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "| - | jq not available | - | - |" >> $GITHUB_STEP_SUMMARY
+              jq -r '.top_priorities[:10] | .[] | "| \(.priority) | \(.title[:50]) | \(.severity) | \(.risk_score) |"' "$AI_FILE" >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "| - | No vulnerabilities found | - | - |" >> $GITHUB_STEP_SUMMARY
             fi
-            
-            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ⚠️ Vulnerability Analysis" >> $GITHUB_STEP_SUMMARY
+            echo "AI analysis file not found. Check workflow logs." >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "## 🌐 Live Dashboard" >> $GITHUB_STEP_SUMMARY
