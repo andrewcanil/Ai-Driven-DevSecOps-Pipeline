@@ -139,9 +139,10 @@ function App() {
     };
 
     const applyFilters = () => {
-        if (!data || !data.top_priorities) return;
+        // Use all_findings instead of top_priorities to show ALL vulnerabilities
+        if (!data || !data.all_findings) return;
 
-        let filtered = data.top_priorities;
+        let filtered = data.all_findings;
 
         if (filter.severity !== 'ALL') {
             filtered = filtered.filter(v => v.severity === filter.severity);
@@ -159,6 +160,14 @@ function App() {
                 v.location?.file?.toLowerCase().includes(searchLower)
             );
         }
+
+        // Sort by priority (P1 first) then by risk score (highest first)
+        filtered.sort((a, b) => {
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority; // P1, P2, P3...
+            }
+            return b.risk_score - a.risk_score; // Higher risk score first
+        });
 
         setFilteredVulns(filtered);
     };
@@ -480,7 +489,7 @@ function App() {
                 <Card className="glass-card">
                     <CardContent>
                         <Typography variant="h6" gutterBottom fontWeight="600" sx={{ mb: 2 }}>
-                            Top Priority Vulnerabilities ({filteredVulns.length})
+                            All Vulnerabilities - Sorted by Priority ({filteredVulns.length})
                         </Typography>
                         <TableContainer>
                             <Table>
