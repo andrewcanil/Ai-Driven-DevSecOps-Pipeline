@@ -36,6 +36,11 @@ class RiskScorer:
                 vuln.risk_score = 0.0
                 continue
             
+            # Upgrade certain CWEs to CRITICAL severity (Remote Code Execution)
+            critical_cwes = ['CWE-95', 'CWE-502', 'CWE-94']  # eval, pickle, code injection
+            if vuln.cwe in critical_cwes and vuln.severity != Severity.CRITICAL:
+                vuln.severity = Severity.CRITICAL
+            
             # Calculate individual factor scores
             severity_score = self._calculate_severity_score(vuln)
             exploitability_score = self._calculate_exploitability_score(vuln)

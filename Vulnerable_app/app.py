@@ -66,6 +66,8 @@ def index():
                 <li><a href="/search">Search Users</a></li>
                 <li><a href="/upload">Upload File</a></li>
                 <li><a href="/ping">Ping Utility</a></li>
+                <li><a href="/calculate">Calculator (CRITICAL)</a></li>
+                <li><a href="/deserialize">Deserializer (CRITICAL)</a></li>
                 <li><a href="/admin">Admin Panel</a></li>
             </ul>
         </body>
@@ -213,6 +215,85 @@ def upload():
                 Filename: <input name="filename" value="test.txt"><br>
                 Content: <textarea name="content"></textarea><br>
                 <input type="submit" value="Upload">
+            </form>
+        </body>
+    </html>
+    '''
+    return render_template_string(html)
+
+
+# CWE-95: Remote Code Execution via eval() - CRITICAL
+@app.route('/calculate', methods=['GET', 'POST'])
+def calculate():
+    if request.method == 'POST':
+        expression = request.form.get('expression', '')
+        
+        # CRITICAL VULNERABILITY: eval() with user input allows arbitrary code execution
+        try:
+            result = eval(expression)  # Extremely dangerous!
+            output = f"Result: {result}"
+        except Exception as e:
+            output = f"Error: {str(e)}"
+        
+        html = f'''
+        <html>
+            <body>
+                <h2>Calculator Results</h2>
+                <p>{output}</p>
+                <a href="/calculate">Calculate again</a>
+            </body>
+        </html>
+        '''
+        return render_template_string(html)
+    
+    html = '''
+    <html>
+        <body>
+            <h2>Calculator</h2>
+            <form method="POST">
+                Expression: <input name="expression" value="2+2">
+                <input type="submit" value="Calculate">
+            </form>
+            <p>Try: 2+2, 10*5, etc.</p>
+        </body>
+    </html>
+    '''
+    return render_template_string(html)
+
+
+# CWE-502: Insecure Deserialization - CRITICAL
+@app.route('/deserialize', methods=['GET', 'POST'])
+def deserialize():
+    if request.method == 'POST':
+        data = request.form.get('data', '')
+        
+        # CRITICAL VULNERABILITY: pickle.loads() with user input allows RCE
+        try:
+            import base64
+            decoded = base64.b64decode(data)
+            obj = pickle.loads(decoded)  # Extremely dangerous!
+            output = f"Deserialized object: {obj}"
+        except Exception as e:
+            output = f"Error: {str(e)}"
+        
+        html = f'''
+        <html>
+            <body>
+                <h2>Deserialization Results</h2>
+                <p>{output}</p>
+                <a href="/deserialize">Try again</a>
+            </body>
+        </html>
+        '''
+        return render_template_string(html)
+    
+    html = '''
+    <html>
+        <body>
+            <h2>Object Deserializer</h2>
+            <form method="POST">
+                Base64 Data: <input name="data" size="50">
+                <input type="submit" value="Deserialize">
             </form>
         </body>
     </html>
