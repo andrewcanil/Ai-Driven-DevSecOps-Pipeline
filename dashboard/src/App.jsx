@@ -343,7 +343,6 @@ function App() {
                                         <Typography
                                             variant="h4"
                                             fontWeight="700"
-                                            className={summary.by_severity?.CRITICAL > 0 ? 'shake' : ''}
                                             sx={{ color: '#ff0080', mt: 0.5 }}
                                         >
                                             {(summary.by_severity?.CRITICAL || 0) + (summary.by_severity?.HIGH || 0)}
