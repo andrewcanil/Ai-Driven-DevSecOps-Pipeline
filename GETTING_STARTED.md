@@ -158,6 +158,5 @@ A: Increase timeout in workflow or reduce ZAP scan scope in `zap/zap-config.yml`
 - 📖 [Full Documentation](README.md)
 - 🏗️ [Architecture Guide](docs/ARCHITECTURE.md)
 - 🚀 [Deployment Guide](docs/DEPLOYMENT.md)
-- 📝 [Walkthrough](walkthrough.md)
 
 **Ready to make your software more secure!** 🔒

@@ -368,19 +368,6 @@ def register():
     return render_template_string(html)
 
 
-# CWE-502: Insecure Deserialization
-@app.route('/deserialize', methods=['POST'])
-def deserialize():
-    data = request.form.get('data', '')
-    
-    # Vulnerable: Deserializing untrusted data
-    try:
-        obj = pickle.loads(bytes.fromhex(data))
-        return f"Deserialized: {obj}"
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-
 # CWE-330: Insecure Random
 @app.route('/token')
 def generate_token():

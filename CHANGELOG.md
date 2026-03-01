@@ -44,8 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Complete README with quick start
   - Architecture documentation
   - Deployment guides
-  - Team handover documentation
-  - API reference
   
 - **Policy Configuration**
   - Customizable security policy (YAML)
@@ -100,4 +98,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Complete AI-driven security pipeline
   - Live dashboard deployment
   - Full documentation
-  - Team-ready collaboration features

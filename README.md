@@ -2,14 +2,12 @@
 
 <div align="center">
 
-[![Security Scan](https://github.com/renegade475/Ai-Driven-DevSecOps-Pipeline/workflows/AI-Driven%20DevSecOps%20Pipeline/badge.svg)](https://github.com/renegade475/Ai-Driven-DevSecOps-Pipeline/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
-[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**[Live Dashboard](https://ai-driven-dev-sec-ops-pipeline.vercel.app)** | **[Documentation](docs/)** | **[Quick Start](#-quick-start)** | **[Team Guide](TEAM_HANDOVER.md)**
+**[Documentation](docs/)** | **[Quick Start](#-quick-start)** | **[Contributing](CONTRIBUTING.md)**
 
 </div>
 
@@ -75,19 +73,11 @@ Modern software development demands fast CI/CD pipelines, but integrating securi
 - Node.js 18+
 - Docker (for OWASP ZAP)
 
-### Installation
+### Fork & Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/Ai-Driven-DevSecOps-Pipeline.git
-   cd Ai-Driven-DevSecOps-Pipeline
-   ```
+1. **Fork this repository** to your own GitHub account
 
-2. **Configure policy** (optional)
-   
-   Edit `config/policy.yml` to customize security rules, severity thresholds, and risk scoring for your organization.
-
-3. **Enable GitHub Actions**
+2. **Enable GitHub Actions**
    
    The workflow at `.github/workflows/security-scan.yml` will automatically run on:
    - Push to `main` or `develop` branches
@@ -95,23 +85,24 @@ Modern software development demands fast CI/CD pipelines, but integrating securi
    - Manual trigger via workflow_dispatch
    - Daily at 2 AM UTC (scheduled scan)
 
-4. **Deploy Dashboard to Vercel** (Recommended)
+3. **Configure policy** (optional)
    
-   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/renegade475/Ai-Driven-DevSecOps-Pipeline&project-name=ai-devsecops-dashboard&repository-name=ai-devsecops-dashboard&root-directory=dashboard)
+   Edit `config/policy.yml` to customize security rules, severity thresholds, and risk scoring for your organization.
+
+4. **Deploy Dashboard** (optional)
    
-   **One-click deployment** - Your dashboard will be live at a URL like:
-   ```
-   https://ai-devsecops-dashboard.vercel.app
-   ```
+   **Option A — Vercel (recommended):**
    
-   **Auto-updates**: Every GitHub push automatically deploys the latest scan results!
+   See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for one-click deployment instructions.
    
-   See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for detailed setup instructions.
+   **Option B — GitHub Pages:**
+   
+   The workflow automatically deploys to GitHub Pages. Enable it in your repo settings under **Settings → Pages → Source → GitHub Actions**.
 
 5. **View results**
    
    After the workflow completes:
-   - **Live Dashboard**: Visit your Vercel URL (auto-updates with each scan)
+   - **Dashboard**: Visit your deployed URL (auto-updates with each scan)
    - **Download Artifacts**: Get detailed reports from the Actions tab
    - **Local Dashboard**: Build and run `dashboard/` for offline viewing
 
@@ -311,28 +302,29 @@ Ai-Driven-DevSecOps-Pipeline/
 │   └── requirements.txt
 ├── docs/                           # Documentation
 │   ├── ARCHITECTURE.md
-│   ├── DEPLOYMENT.md
-│   └── API.md
+│   └── DEPLOYMENT.md
 └── README.md
 ```
 
 ## 🧪 Testing
 
-### Run the Vulnerable Application
+### Vulnerable Application
 
-The `Vulnerable_app/` directory contains a Flask application with intentional security flaws for testing:
+The `Vulnerable_app/` directory contains a Flask application with **intentional security flaws** across all severity categories:
 
-```bash
-cd Vulnerable_app
-python app.py
-```
-
-Visit http://localhost:5000 to explore endpoints with vulnerabilities:
-- `/login` - SQL injection
-- `/search` - XSS
-- `/ping` - Command injection
-- `/upload` - Path traversal
-- `/admin` - Missing authentication
+| Severity | Vulnerability | CWE | Endpoint |
+|----------|--------------|-----|----------|
+| **CRITICAL** | Remote Code Execution (`eval()`) | CWE-95 | `/calculate` |
+| **CRITICAL** | Insecure Deserialization (`pickle`) | CWE-502 | `/deserialize` |
+| **HIGH** | SQL Injection | CWE-89 | `/login` |
+| **HIGH** | Cross-Site Scripting (XSS) | CWE-79 | `/search` |
+| **HIGH** | Command Injection | CWE-78 | `/ping` |
+| **HIGH** | Hardcoded Secrets | CWE-798 | Global |
+| **MEDIUM** | Weak Cryptographic Hash (MD5) | CWE-327 | `/register` |
+| **MEDIUM** | Path Traversal | CWE-22 | `/upload` |
+| **MEDIUM** | SSL Verification Disabled | CWE-295 | `/fetch` |
+| **LOW** | Insecure Random | CWE-330 | `/token` |
+| **LOW** | Information Disclosure | CWE-209 | Error handlers |
 
 ### Trigger a Scan
 
@@ -350,7 +342,6 @@ gh workflow run security-scan.yml
 
 - [Architecture Documentation](docs/ARCHITECTURE.md) - Detailed system design
 - [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment instructions
-- [API Documentation](docs/API.md) - Integration API reference
 
 ## 🎓 Academic Context
 
@@ -387,13 +378,6 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-## 👥 Authors
-
-- **Anantha Krishnan K**
-- **Andrew C Anil**
-- **Harsha Eily Thomas**
-- **Jayashankar N**
-
 ## 🙏 Acknowledgments
 
 - OWASP for security testing tools and guidelines
@@ -404,7 +388,6 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 For questions or issues:
 - Open an issue on GitHub
-- Email: your.email@example.com
 
 ---
 

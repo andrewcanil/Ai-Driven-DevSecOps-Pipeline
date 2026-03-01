@@ -82,3 +82,13 @@ dashboard/build/
 # Vulnerable app database
 Vulnerable_app/vulnerable_app.db
 Vulnerable_app/uploads/
+
+# Generated scan data
+ai_analysis.json
+temp_old_data.json
+testresults/
+aggregated/
+
+# Convenience scripts
+*.bat
+serve-dashboard.js

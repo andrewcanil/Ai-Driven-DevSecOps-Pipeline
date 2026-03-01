@@ -1,10 +1,12 @@
-# 🚀 Deploy to Vercel
+# AI-Driven DevSecOps Dashboard
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/renegade475/Ai-Driven-DevSecOps-Pipeline&project-name=ai-devsecops-dashboard&repository-name=ai-devsecops-dashboard&root-directory=dashboard)
+## Deploy to Vercel
 
-## One-Click Deployment
-
-Click the button above to deploy your AI-Driven DevSecOps Dashboard to Vercel!
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click **Add New Project** → **Import Git Repository**
+3. Select your fork of `Ai-Driven-DevSecOps-Pipeline`
+4. Set **Root Directory** to `dashboard`
+5. Click **Deploy**
 
 ## What You Get
 
