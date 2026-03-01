@@ -11,9 +11,9 @@
     "false_positives": 0,
     "false_positive_rate": 0.0,
     "by_severity": {
-      "CRITICAL": 0,
-      "HIGH": 18,
-      "MEDIUM": 47,
+      "CRITICAL": 3,
+      "HIGH": 16,
+      "MEDIUM": 46,
       "LOW": 2,
       "INFO": 0
     },
@@ -141,7 +141,7 @@
       "id": "3a2ad944388179da",
       "title": "semgrep-rules.python-pickle-unsafe",
       "description": "Insecure deserialization: pickle can execute arbitrary code",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "source": "SAST",
       "location": {
         "file": "Vulnerable_app/app.py",
@@ -581,7 +581,7 @@
       "id": "56b6b7362f48b84d",
       "title": "python.flask.security.insecure-deserialization.insecure-deserialization",
       "description": "Detected the use of an insecure deserialization library in a Flask route. These libraries are prone to code execution vulnerabilities. Ensure user data does not enter this function. To fix this, try to avoid serializing whole objects. Consider instead using a serializer such as JSON.",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "source": "SAST",
       "location": {
         "file": "Vulnerable_app/app.py",
@@ -1336,7 +1336,7 @@
       "id": "3a2ad944388179da",
       "title": "semgrep-rules.python-pickle-unsafe",
       "description": "Insecure deserialization: pickle can execute arbitrary code",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "source": "SAST",
       "location": {
         "file": "Vulnerable_app/app.py",
@@ -3007,7 +3007,7 @@
       "id": "56b6b7362f48b84d",
       "title": "python.flask.security.insecure-deserialization.insecure-deserialization",
       "description": "Detected the use of an insecure deserialization library in a Flask route. These libraries are prone to code execution vulnerabilities. Ensure user data does not enter this function. To fix this, try to avoid serializing whole objects. Consider instead using a serializer such as JSON.",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "source": "SAST",
       "location": {
         "file": "Vulnerable_app/app.py",
@@ -3048,7 +3048,7 @@
       "id": "70a110c9175d77f7",
       "title": "python.lang.security.deserialization.pickle.avoid-pickle",
       "description": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
-      "severity": "MEDIUM",
+      "severity": "CRITICAL",
       "source": "SAST",
       "location": {
         "file": "Vulnerable_app/app.py",
