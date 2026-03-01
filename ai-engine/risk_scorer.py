@@ -20,6 +20,31 @@ class RiskScorer:
         self.policy = policy
         self.risk_factors = policy.risk_factors
     
+    def _cwe_matches(self, vuln_cwe, target_cwes: List[str]) -> bool:
+        """
+        Check if a vulnerability's CWE matches any of the target CWEs.
+        Handles CWE stored as string ('CWE-89'), list (['CWE-89']),
+        or string with description ('CWE-89: SQL Injection').
+        """
+        if not vuln_cwe:
+            return False
+        
+        # Normalize to a list of CWE strings
+        cwe_values = []
+        if isinstance(vuln_cwe, list):
+            cwe_values = vuln_cwe
+        else:
+            cwe_values = [str(vuln_cwe)]
+        
+        for cwe_val in cwe_values:
+            cwe_str = str(cwe_val).strip()
+            for target in target_cwes:
+                # Exact match or prefix match (handles 'CWE-89: SQL Injection')
+                if cwe_str == target or cwe_str.startswith(target + ':') or cwe_str.startswith(target + ' '):
+                    return True
+        
+        return False
+    
     def score_vulnerabilities(self, vulnerabilities: List[Vulnerability]) -> List[Vulnerability]:
         """
         Calculate risk scores for all vulnerabilities
@@ -38,7 +63,7 @@ class RiskScorer:
             
             # Upgrade certain CWEs to CRITICAL severity (Remote Code Execution)
             critical_cwes = ['CWE-95', 'CWE-502', 'CWE-94']  # eval, pickle, code injection
-            if vuln.cwe in critical_cwes and vuln.severity != Severity.CRITICAL:
+            if self._cwe_matches(vuln.cwe, critical_cwes) and vuln.severity != Severity.CRITICAL:
                 vuln.severity = Severity.CRITICAL
             
             # Calculate individual factor scores
@@ -73,22 +98,19 @@ class RiskScorer:
     
     def _calculate_exploitability_score(self, vuln: Vulnerability) -> float:
         """Calculate exploitability score"""
-        # Determine exploitability based on vulnerability type and characteristics
-        cwe = vuln.cwe
-        
         # High exploitability vulnerabilities
-        high_exploit_cwes = ['CWE-89', 'CWE-78', 'CWE-94', 'CWE-502']  # SQLi, Command Injection, Code Injection
-        if cwe in high_exploit_cwes:
+        high_exploit_cwes = ['CWE-89', 'CWE-78', 'CWE-94', 'CWE-502']
+        if self._cwe_matches(vuln.cwe, high_exploit_cwes):
             return self.policy.exploitability_scores.get('PROVEN_EXPLOIT', 1.0)
         
         # Medium exploitability
-        medium_exploit_cwes = ['CWE-79', 'CWE-352', 'CWE-22']  # XSS, CSRF, Path Traversal
-        if cwe in medium_exploit_cwes:
+        medium_exploit_cwes = ['CWE-79', 'CWE-352', 'CWE-22']
+        if self._cwe_matches(vuln.cwe, medium_exploit_cwes):
             return self.policy.exploitability_scores.get('FUNCTIONAL_EXPLOIT', 0.9)
         
         # Authentication/crypto issues
         auth_cwes = ['CWE-287', 'CWE-798', 'CWE-327']
-        if cwe in auth_cwes:
+        if self._cwe_matches(vuln.cwe, auth_cwes):
             return self.policy.exploitability_scores.get('POC_EXPLOIT', 0.7)
         
         # Default based on severity
@@ -101,22 +123,19 @@ class RiskScorer:
     
     def _calculate_business_impact_score(self, vuln: Vulnerability) -> float:
         """Calculate business impact score"""
-        # Determine impact based on vulnerability type
-        cwe = vuln.cwe
-        
         # Catastrophic impact - data breach, RCE
         catastrophic_cwes = ['CWE-89', 'CWE-78', 'CWE-94', 'CWE-502', 'CWE-798']
-        if cwe in catastrophic_cwes:
+        if self._cwe_matches(vuln.cwe, catastrophic_cwes):
             return self.policy.business_impact_scores.get('CATASTROPHIC', 1.0)
         
         # Severe impact - authentication bypass, sensitive data exposure
         severe_cwes = ['CWE-287', 'CWE-306', 'CWE-200', 'CWE-311']
-        if cwe in severe_cwes:
+        if self._cwe_matches(vuln.cwe, severe_cwes):
             return self.policy.business_impact_scores.get('SEVERE', 0.8)
         
         # Moderate impact - XSS, CSRF
         moderate_cwes = ['CWE-79', 'CWE-352', 'CWE-918']
-        if cwe in moderate_cwes:
+        if self._cwe_matches(vuln.cwe, moderate_cwes):
             return self.policy.business_impact_scores.get('MODERATE', 0.5)
         
         # Default based on severity
@@ -164,8 +183,10 @@ class RiskScorer:
         cwe = vuln.cwe
         
         # High compliance impact for OWASP Top 10
-        if owasp and 'A0' in owasp:
-            return 1.0
+        if owasp:
+            owasp_str = str(owasp)
+            if 'A0' in owasp_str:
+                return 1.0
         
         # Medium compliance impact for common CWEs
         if cwe:
