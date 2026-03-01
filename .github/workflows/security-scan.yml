@@ -536,9 +536,9 @@ jobs:
             echo "AI analysis file not found. Check workflow logs." >> $GITHUB_STEP_SUMMARY
           fi
           
-          echo "## 🌐 Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "## 🌐 Live Dashboard" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 **[View Repository](${{ github.server_url }}/${{ github.repository }})**" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **[View Interactive Dashboard](https://ai-driven-dev-sec-ops-pipeline.vercel.app)**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "The dashboard provides:" >> $GITHUB_STEP_SUMMARY
           echo "- 📊 Interactive charts and visualizations" >> $GITHUB_STEP_SUMMARY
