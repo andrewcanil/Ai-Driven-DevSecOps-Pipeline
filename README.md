@@ -409,5 +409,3 @@ For questions or issues:
 ---
 
 **⚠️ Disclaimer**: The vulnerable application in this repository contains intentional security flaws for educational purposes. **DO NOT deploy it to production environments.**
-#   T e s t i n g   a u t o - s y n c   m e c h a n i s m   -   2 0 2 6 - 0 1 - 2 1   1 1 : 0 1 : 1 6  
- 
